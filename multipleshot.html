@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student & Teacher Registration</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #eee;
+        }
+        .tab-btn {
+            padding: 12px 25px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 16px;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        .tab-btn.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .form-section {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .form-group.full {
+            grid-template-columns: 1fr;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: bold;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #764ba2;
+        }
+        .search-filter {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: end;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th {
+            background: #667eea;
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+        }
+        tr:hover {
+            background: #f5f5f5;
+        }
+        .action-btn {
+            background: #ff6b6b;
+            padding: 6px 12px;
+            font-size: 12px;
+            margin-right: 5px;
+        }
+        .action-btn:hover {
+            background: #ff5252;
+        }
+        .edit-btn {
+            background: #4CAF50;
+        }
+        .edit-btn:hover {
+            background: #45a049;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .badge.student {
+            background: #cfe9ff;
+            color: #004085;
+        }
+        .badge.teacher {
+            background: #fff3cd;
+            color: #856404;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📚 Registration Management System</h1>
+        
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('students')">Students</button>
+            <button class="tab-btn" onclick="switchTab('teachers')">Teachers</button>
+        </div>
+
+        <!-- STUDENTS TAB -->
+        <div id="students" class="tab-content active">
+            <div class="form-section">
+                <h2>Add New Student</h2>
+                <div class="form-group">
+                    <div>
+                        <label>First Name</label>
+                        <input type="text" id="studentFirstName" placeholder="Enter first name">
+                    </div>
+                    <div>
+                        <label>Last Name</label>
+                        <input type="text" id="studentLastName" placeholder="Enter last name">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div>
+                        <label>Email</label>
+                        <input type="email" id="studentEmail" placeholder="Enter email">
+                    </div>
+                    <div>
+                        <label>Roll Number</label>
+                        <input type="text" id="studentRoll" placeholder="Enter roll number">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div>
+                        <label>Class</label>
+                        <input type="text" id="studentClass" placeholder="e.g., 10-A">
+                    </div>
+                    <div>
+                        <label>Phone</label>
+                        <input type="tel" id="studentPhone" placeholder="Enter phone number">
+                    </div>
+                </div>
+                <button onclick="addStudent()">Add Student</button>
+            </div>
+
+            <div id="studentSuccess"></div>
+
+            <div class="search-filter">
+                <input type="text" id="studentSearch" placeholder="Search by name or email..." onkeyup="filterStudents()">
+                <select id="studentClassFilter" onchange="filterStudents()">
+                    <option value="">All Classes</option>
+                </select>
+                <input type="text" id="studentRollFilter" placeholder="Filter by roll..." onkeyup="filterStudents()">
+                <button onclick="resetStudentFilters()">Reset</button>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Roll Number</th>
+                        <th>Class</th>
+                        <th>Phone</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="studentTableBody">
+                </tbody>
+            </table>
+        </div>
+
+        <!-- TEACHERS TAB -->
+        <div id="teachers" class="tab-content">
+            <div class="form-section">
+                <h2>Add New Teacher</h2>
+                <div class="form-group">
+                    <div>
+                        <label>First Name</label>
+                        <input type="text" id="teacherFirstName" placeholder="Enter first name">
+                    </div>
+                    <div>
+                        <label>Last Name</label>
+                        <input type="text" id="teacherLastName" placeholder="Enter last name">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div>
+                        <label>Email</label>
+                        <input type="email" id="teacherEmail" placeholder="Enter email">
+                    </div>
+                    <div>
+                        <label>Employee ID</label>
+                        <input type="text" id="teacherEmpID" placeholder="Enter employee ID">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div>
+                        <label>Subject</label>
+                        <input type="text" id="teacherSubject" placeholder="e.g., Mathematics">
+                    </div>
+                    <div>
+                        <label>Phone</label>
+                        <input type="tel" id="teacherPhone" placeholder="Enter phone number">
+                    </div>
+                </div>
+                <button onclick="addTeacher()">Add Teacher</button>
+            </div>
+
+            <div id="teacherSuccess"></div>
+
+            <div class="search-filter">
+                <input type="text" id="teacherSearch" placeholder="Search by name or email..." onkeyup="filterTeachers()">
+                <select id="teacherSubjectFilter" onchange="filterTeachers()">
+                    <option value="">All Subjects</option>
+                </select>
+                <input type="text" id="teacherEmpFilter" placeholder="Filter by employee ID..." onkeyup="filterTeachers()">
+                <button onclick="resetTeacherFilters()">Reset</button>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Employee ID</th>
+                        <th>Subject</th>
+                        <th>Phone</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="teacherTableBody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Demo Data
+        let students = [
+            { id: 1, firstName: 'Aarav', lastName: 'Singh', email: 'aarav@school.com', roll: 'S001', class: '10-A', phone: '9876543210' },
+            { id: 2, firstName: 'Bhavna', lastName: 'Patel', email: 'bhavna@school.com', roll: 'S002', class: '10-B', phone: '9876543211' },
+            { id: 3, firstName: 'Chitra', lastName: 'Kumar', email: 'chitra@school.com', roll: 'S003', class: '10-A', phone: '9876543212' },
+            { id: 4, firstName: 'Diwakar', lastName: 'Sharma', email: 'diwakar@school.com', roll: 'S004', class: '10-C', phone: '9876543213' },
+            { id: 5, firstName: 'Esha', lastName: 'Gupta', email: 'esha@school.com', roll: 'S005', class: '10-B', phone: '9876543214' },
+            { id: 6, firstName: 'Farhan', lastName: 'Khan', email: 'farhan@school.com', roll: 'S006', class: '10-A', phone: '9876543215' },
+            { id: 7, firstName: 'Gita', lastName: 'Nair', email: 'gita@school.com', roll: 'S007', class: '10-C', phone: '9876543216' },
+            { id: 8, firstName: 'Harish', lastName: 'Kumar', email: 'harish@school.com', roll: 'S008', class: '10-B', phone: '9876543217' },
+            { id: 9, firstName: 'Ishita', lastName: 'Verma', email: 'ishita@school.com', roll: 'S009', class: '10-A', phone: '9876543218' },
+            { id: 10, firstName: 'Jaya', lastName: 'Rao', email: 'jaya@school.com', roll: 'S010', class: '10-C', phone: '9876543219' },
+            { id: 11, firstName: 'Karan', lastName: 'Singh', email: 'karan@school.com', roll: 'S011', class: '10-B', phone: '9876543220' },
+            { id: 12, firstName: 'Leela', lastName: 'Sharma', email: 'leela@school.com', roll: 'S012', class: '10-A', phone: '9876543221' },
+            { id: 13, firstName: 'Madhav', lastName: 'Patel', email: 'madhav@school.com', roll: 'S013', class: '10-C', phone: '9876543222' },
+            { id: 14, firstName: 'Nisha', lastName: 'Kumar', email: 'nisha@school.com', roll: 'S014', class: '10-B', phone: '9876543223' },
+            { id: 15, firstName: 'Omkar', lastName: 'Desai', email: 'omkar@school.com', roll: 'S015', class: '10-A', phone: '9876543224' },
+        ];
+
+        let teachers = [
+            { id: 1, firstName: 'Rajesh', lastName: 'Mishra', email: 'rajesh@school.com', empID: 'T001', subject: 'Mathematics', phone: '9123456789' },
+            { id: 2, firstName: 'Priya', lastName: 'Singh', email: 'priya@school.com', empID: 'T002', subject: 'English', phone: '9123456790' },
+            { id: 3, firstName: 'Vikram', lastName: 'Kumar', email: 'vikram@school.com', empID: 'T003', subject: 'Science', phone: '9123456791' },
+            { id: 4, firstName: 'Anjali', lastName: 'Sharma', email: 'anjali@school.com', empID: 'T004', subject: 'History', phone: '9123456792' },
+            { id: 5, firstName: 'Suresh', lastName: 'Patel', email: 'suresh@school.com', empID: 'T005', subject: 'Geography', phone: '9123456793' },
+            { id: 6, firstName: 'Meena', lastName: 'Verma', email: 'meena@school.com', empID: 'T006', subject: 'Hindi', phone: '9123456794' },
+            { id: 7, firstName: 'Arvind', lastName: 'Gupta', email: 'arvind@school.com', empID: 'T007', subject: 'Mathematics', phone: '9123456795' },
+            { id: 8, firstName: 'Nita', lastName: 'Rao', email: 'nita@school.com', empID: 'T008', subject: 'Science', phone: '9123456796' },
+        ];
+
+        let studentIdCounter = 16;
+        let teacherIdCounter = 9;
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tab).classList.add('active');
+            event.target.classList.add('active');
+            populateFilters();
+        }
+
+        function addStudent() {
+            const firstName = document.getElementById('studentFirstName').value;
+            const lastName = document.getElementById('studentLastName').value;
+            const email = document.getElementById('studentEmail').value;
+            const roll = document.getElementById('studentRoll').value;
+            const studentClass = document.getElementById('studentClass').value;
+            const phone = document.getElementById('studentPhone').value;
+
+            if (!firstName || !lastName || !email || !roll || !studentClass || !phone) {
+                alert('Please fill all fields');
+                return;
+            }
+
+            students.push({
+                id: studentIdCounter++,
+                firstName, lastName, email, roll, class: studentClass, phone
+            });
+
+            showSuccess('studentSuccess', 'Student added successfully!');
+            clearStudentForm();
+            displayStudents(students);
+            populateFilters();
+        }
+
+        function addTeacher() {
+            const firstName = document.getElementById('teacherFirstName').value;
+            const lastName = document.getElementById('teacherLastName').value;
+            const email = document.getElementById('teacherEmail').value;
+            const empID = document.getElementById('teacherEmpID').value;
+            const subject = document.getElementById('teacherSubject').value;
+            const phone = document.getElementById('teacherPhone').value;
+
+            if (!firstName || !lastName || !email || !empID || !subject || !phone) {
+                alert('Please fill all fields');
+                return;
+            }
+
+            teachers.push({
+                id: teacherIdCounter++,
+                firstName, lastName, email, empID, subject, phone
+            });
+
+            showSuccess('teacherSuccess', 'Teacher added successfully!');
+            clearTeacherForm();
+            displayTeachers(teachers);
+            populateFilters();
+        }
+
+        function displayStudents(data) {
+            const tbody = document.getElementById('studentTableBody');
+            tbody.innerHTML = '';
+            data.forEach(student => {
+                const row = `<tr>
+                    <td>${student.firstName} ${student.lastName}</td>
+                    <td>${student.email}</td>
+                    <td>${student.roll}</td>
+                    <td>${student.class}</td>
+                    <td>${student.phone}</td>
+                    <td>
+                        <button class="action-btn edit-btn" onclick="editStudent(${student.id})">Edit</button>
+                        <button class="action-btn" onclick="deleteStudent(${student.id})">Delete</button>
+                    </td>
+                </tr>`;
+                tbody.innerHTML += row;
+            });
+        }
+
+        function displayTeachers(data) {
+            const tbody = document.getElementById('teacherTableBody');
+            tbody.innerHTML = '';
+            data.forEach(teacher => {
+                const row = `<tr>
+                    <td>${teacher.firstName} ${teacher.lastName}</td>
+                    <td>${teacher.email}</td>
+                    <td>${teacher.empID}</td>
+                    <td>${teacher.subject}</td>
+                    <td>${teacher.phone}</td>
+                    <td>
+                        <button class="action-btn edit-btn" onclick="editTeacher(${teacher.id})">Edit</button>
+                        <button class="action-btn" onclick="deleteTeacher(${teacher.id})">Delete</button>
+                    </td>
+                </tr>`;
+                tbody.innerHTML += row;
+            });
+        }
+
+        function filterStudents() {
+            const search = document.getElementById('studentSearch').value.toLowerCase();
+            const classFilter = document.getElementById('studentClassFilter').value;
+            const rollFilter = document.getElementById('studentRollFilter').value.toLowerCase();
+
+            const filtered = students.filter(s => 
+                (s.firstName.toLowerCase().includes(search) || s.lastName.toLowerCase().includes(search) || s.email.toLowerCase().includes(search)) &&
+                (!classFilter || s.class === classFilter) &&
+                (!rollFilter || s.roll.toLowerCase().includes(rollFilter))
+            );
+            displayStudents(filtered);
+        }
+
+        function filterTeachers() {
+            const search = document.getElementById('teacherSearch').value.toLowerCase();
+            const subjectFilter = document.getElementById('teacherSubjectFilter').value;
+            const empFilter = document.getElementById('teacherEmpFilter').value.toLowerCase();
+
+            const filtered = teachers.filter(t => 
+                (t.firstName.toLowerCase().includes(search) || t.lastName.toLowerCase().includes(search) || t.email.toLowerCase().includes(search)) &&
+                (!subjectFilter || t.subject === subjectFilter) &&
+                (!empFilter || t.empID.toLowerCase().includes(empFilter))
+            );
+            displayTeachers(filtered);
+        }
+
+        function deleteStudent(id) {
+            if (confirm('Are you sure?')) {
+                students = students.filter(s => s.id !== id);
+                displayStudents(students);
+                showSuccess('studentSuccess', 'Student deleted successfully!');
+            }
+        }
+
+        function deleteTeacher(id) {
+            if (confirm('Are you sure?')) {
+                teachers = teachers.filter(t => t.id !== id);
+                displayTeachers(teachers);
+                showSuccess('teacherSuccess', 'Teacher deleted successfully!');
+            }
+        }
+
+        function editStudent(id) {
+            alert('Edit functionality can be implemented to update the student details');
+        }
+
+        function editTeacher(id) {
+            alert('Edit functionality can be implemented to update the teacher details');
+        }
+
+        function clearStudentForm() {
+            document.getElementById('studentFirstName').value = '';
+            document.getElementById('studentLastName').value = '';
+            document.getElementById('studentEmail').value = '';
+            document.getElementById('studentRoll').value = '';
+            document.getElementById('studentClass').value = '';
+            document.getElementById('studentPhone').value = '';
+        }
+
+        function clearTeacherForm() {
+            document.getElementById('teacherFirstName').value = '';
+            document.getElementById('teacherLastName').value = '';
+            document.getElementById('teacherEmail').value = '';
+            document.getElementById('teacherEmpID').value = '';
+            document.getElementById('teacherSubject').value = '';
+            document.getElementById('teacherPhone').value = '';
+        }
+
+        function resetStudentFilters() {
+            document.getElementById('studentSearch').value = '';
+            document.getElementById('studentClassFilter').value = '';
+            document.getElementById('studentRollFilter').value = '';
+            displayStudents(students);
+        }
+
+        function resetTeacherFilters() {
+            document.getElementById('teacherSearch').value = '';
+            document.getElementById('teacherSubjectFilter').value = '';
+            document.getElementById('teacherEmpFilter').value = '';
+            displayTeachers(teachers);
+        }
+
+        function populateFilters() {
+            const classes = [...new Set(students.map(s => s.class))].sort();
+            const subjects = [...new Set(teachers.map(t => t.subject))].sort();
+            
+            const classSelect = document.getElementById('studentClassFilter');
+            const subjectSelect = document.getElementById('teacherSubjectFilter');
+            
+            classSelect.innerHTML = '<option value="">All Classes</option>';
+            subjectSelect.innerHTML = '<option value="">All Subjects</option>';
+            
+            classes.forEach(c => {
+                classSelect.innerHTML += `<option value="${c}">${c}</option>`;
+            });
+            
+            subjects.forEach(s => {
+                subjectSelect.innerHTML += `<option value="${s}">${s}</option>`;
+            });
+        }
+
+        function showSuccess(elementId, message) {
+            const el = document.getElementById(elementId);
+            el.innerHTML = `<div class="success">${message}</div>`;
+            setTimeout(() => el.innerHTML = '', 3000);
+        }
+
+        // Initialize on page load
+        window.onload = () => {
+            displayStudents(students);
+            displayTeachers(teachers);
+            populateFilters();
+        };
+    </script>
+</body>
+</html>
